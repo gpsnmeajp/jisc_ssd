@@ -15,7 +15,7 @@ const int PIN_WEB = 13; //OUTPUT       !Write Enable (HIGH=待機, LOW=書込中
 const int PIN_REB = 14; //OUTPUT       !Read Enable (HIGH=待機, LOW=読込中, HIGH→LOW=データ確定)
 const int PIN_RBB = 15; //INPUT_PULLUP Ready/!Busy (HIGH=Ready, LOW=Busy)
 
-bool ssd_debug_log = true;
+bool ssd_debug_log = false;
 
 void io_set_output() {
   pinMode(PIN_IO1, OUTPUT);
@@ -113,8 +113,10 @@ byte io_read() {
 
 void io_wait_busy(){
   while(!digitalRead(PIN_RBB)){
-    Serial.println("BUSY!");
-    delay(1);
+    if(ssd_debug_log){
+      Serial.println("BUSY!");
+    }
+    delayMicroseconds(10);
   }
 }
 
@@ -202,14 +204,13 @@ void ssd_data_input(byte d)
   io_set_output();
   io_write(d);
 
-  digitalWrite(PIN_WEB, LOW);
-  digitalWrite(PIN_ALE, LOW);
+  digitalWrite(PIN_WEB, HIGH);
 
   io_set_input();
   io_wait_busy();
 }
 
-void ssd_addresses_input(byte ca0, byte ca8, byte pa0, byte pa8)
+void ssd_address4_input(byte ca0, byte ca8, byte pa0, byte pa8)
 {
   if (ssd_debug_log) {
     Serial.print("$ssd_addresses_input ");
@@ -240,6 +241,33 @@ void ssd_addresses_input(byte ca0, byte ca8, byte pa0, byte pa8)
 
   digitalWrite(PIN_WEB, LOW);
   io_write(pa8);
+  digitalWrite(PIN_WEB, HIGH);
+
+  digitalWrite(PIN_ALE, LOW);
+
+  io_set_input();
+  io_wait_busy();
+}
+
+void ssd_address2_input(byte ca0, byte ca8)
+{
+  if (ssd_debug_log) {
+    Serial.print("$ssd_addresses_input ");
+    Serial.print(ca0, HEX);
+    Serial.print(" ");
+    Serial.print(ca8, HEX);
+    Serial.println();
+  }
+  digitalWrite(PIN_CLE, LOW);
+  digitalWrite(PIN_ALE, HIGH);
+
+  digitalWrite(PIN_WEB, LOW);
+  io_set_output();
+  io_write(ca0);
+  digitalWrite(PIN_WEB, HIGH);
+
+  digitalWrite(PIN_WEB, LOW);
+  io_write(ca8);
   digitalWrite(PIN_WEB, HIGH);
 
   digitalWrite(PIN_ALE, LOW);
