@@ -17,5 +17,12 @@ const int PIN_WEB = 13; //OUTPUT       !Write Enable (HIGH=待機, LOW=書込中
 const int PIN_REB = 14; //OUTPUT       !Read Enable (HIGH=待機, LOW=読込中, HIGH→LOW=データ確定)
 const int PIN_RBB = 15; //INPUT_PULLUP Ready/!Busy (HIGH=Ready, LOW=Busy)
 
-const bool ssd_debug_log = false;
+const bool jisc_ssd_debug_log = false;
+
+const int jisc_ssd_blocks = 1024;
+const int jisc_ssd_page_size = 2176;
+const int jisc_ssd_pages_of_block = 64;
+const int jisc_ssd_block_size = jisc_ssd_page_size*jisc_ssd_pages_of_block;
+byte jisc_ssd_block_buffer[jisc_ssd_block_size] = {0};
+
 #endif //JISC_SSD

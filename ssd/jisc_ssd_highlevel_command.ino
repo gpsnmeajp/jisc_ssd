@@ -9,14 +9,14 @@ byte buff[PAGE_SIZE] = {0};
 
 void read_id() {
   Serial.println(" --- read_id ---");
-  jisc_ssd_lowlevel_command_command_input(0x90);
-  jisc_ssd_lowlevel_command_address_input(0x00);
+  jisc_ssd_lowlevel_operation_command_input(0x90);
+  jisc_ssd_lowlevel_operation_address_input(0x00);
 
-  int x1 = jisc_ssd_lowlevel_command_serial_data_output();
-  int x2 = jisc_ssd_lowlevel_command_serial_data_output();
-  int x3 = jisc_ssd_lowlevel_command_serial_data_output();
-  int x4 = jisc_ssd_lowlevel_command_serial_data_output();
-  int x5 = jisc_ssd_lowlevel_command_serial_data_output();
+  int x1 = jisc_ssd_lowlevel_operation_serial_data_output();
+  int x2 = jisc_ssd_lowlevel_operation_serial_data_output();
+  int x3 = jisc_ssd_lowlevel_operation_serial_data_output();
+  int x4 = jisc_ssd_lowlevel_operation_serial_data_output();
+  int x5 = jisc_ssd_lowlevel_operation_serial_data_output();
 
   Serial.print("Maker Code: ");
   Serial.print(x1, HEX);
@@ -58,9 +58,9 @@ void read_id() {
 
 void read_status() {
   Serial.println(" --- read_status ---");
-  jisc_ssd_lowlevel_command_command_input(0x70);
+  jisc_ssd_lowlevel_operation_command_input(0x70);
 
-  int x1 = jisc_ssd_lowlevel_command_serial_data_output();
+  int x1 = jisc_ssd_lowlevel_operation_serial_data_output();
 
   Serial.print("Status :");
   Serial.print(x1, HEX);
@@ -95,43 +95,49 @@ void read_status() {
 
 void read_page(int page)
 {
-  Serial.println(" --- read_page ---");
-  jisc_ssd_lowlevel_command_command_input(0x00);
+  //Serial.println(" --- read_page ---");
+  jisc_ssd_lowlevel_operation_command_input(0x00);
 
   //カラムアドレスはページ内オフセットと思えば良い
-  jisc_ssd_lowlevel_command_address4_input(0x00, 0x00, page & 0xFF, ((page >> 8) & 0xFF));
-  jisc_ssd_lowlevel_command_command_input(0x30);
+  jisc_ssd_lowlevel_operation_address4_input(0x00, 0x00, page & 0xFF, ((page >> 8) & 0xFF));
+  jisc_ssd_lowlevel_operation_command_input(0x30);
+  jisc_ssd_lowlevel_operation_serial_data_output_page_to_block_buffer(jisc_ssd_block_buffer);
 
-  for (int i = 0; i < PAGE_SIZE; i++) {
-    buff[i] = jisc_ssd_lowlevel_command_serial_data_output();
-  }
-  for (int i = 0; i < PAGE_SIZE; i++) {
-    Serial.print(buff[i], HEX);
+  Serial.print(page);
+  Serial.print(":");
+  Serial.println(jisc_ssd_block_buffer[0], HEX);
+
+  for (int i = 0; i < jisc_ssd_page_size; i++) {
+    Serial.print(jisc_ssd_block_buffer[i], HEX);
     Serial.print(" ");
   }
   Serial.println(" ");
+
 }
 
 void write_page(int page)
 {
   Serial.println(" --- write_page ---");
-  jisc_ssd_lowlevel_command_command_input(0x80);
-  jisc_ssd_lowlevel_command_address4_input(0x00, 0x00, page & 0xFF, ((page >> 8) & 0xFF));
+  jisc_ssd_lowlevel_operation_command_input(0x80);
+  jisc_ssd_lowlevel_operation_address4_input(0x00, 0x00, page & 0xFF, ((page >> 8) & 0xFF));
 
+  jisc_ssd_lowlevel_operation_data_input_page_from_block_buffer(jisc_ssd_block_buffer);
+/*
   for (int i = 0; i < PAGE_SIZE; i++) {
     //jisc_ssd_lowlevel_data_input(page[i]);
-    jisc_ssd_lowlevel_command_data_input((byte)i); //お試し連番
+    jisc_ssd_lowlevel_operation_data_input((byte)i); //お試し連番
   }
-  jisc_ssd_lowlevel_command_command_input(0x10);
-  jisc_ssd_lowlevel_command_command_input(0x10);
+*/
+  jisc_ssd_lowlevel_operation_command_input(0x10);
+  jisc_ssd_lowlevel_operation_command_input(0x10);
 }
 
 void erase_page(int page)
 {
   Serial.println(" --- erase_page ---");
-  jisc_ssd_lowlevel_command_command_input(0x60);
-  jisc_ssd_lowlevel_command_address2_input(page & 0xFF, ((page >> 8) & 0xFF)); //下位6bitに意味はない？
-  jisc_ssd_lowlevel_command_command_input(0xD0);
+  jisc_ssd_lowlevel_operation_command_input(0x60);
+  jisc_ssd_lowlevel_operation_address2_input(page & 0xFF, ((page >> 8) & 0xFF)); //下位6bitに意味はない？
+  jisc_ssd_lowlevel_operation_command_input(0xD0);
 }
 
 void erase_all()
@@ -139,9 +145,9 @@ void erase_all()
   Serial.println(" --- erase_all ---");
   for (int block = 0; block < 1024; block++) {
     int page = block * 64;
-    jisc_ssd_lowlevel_command_command_input(0x60);
-    jisc_ssd_lowlevel_command_address2_input(page & 0xFF, ((page >> 8) & 0xFF)); //下位6bitに意味はない？
-    jisc_ssd_lowlevel_command_command_input(0xD0);
+    jisc_ssd_lowlevel_operation_command_input(0x60);
+    jisc_ssd_lowlevel_operation_address2_input(page & 0xFF, ((page >> 8) & 0xFF)); //下位6bitに意味はない？
+    jisc_ssd_lowlevel_operation_command_input(0xD0);
   }
 }
 
@@ -150,10 +156,10 @@ void bad_block_test() {
   for (int block = 0; block < 1024; block++) {
     bool bad = false;
     int page = block * 64;
-    jisc_ssd_lowlevel_command_command_input(0x00);
-    jisc_ssd_lowlevel_command_address4_input(0x00, 0x00, page & 0xFF, ((page >> 8) & 0xFF));
-    jisc_ssd_lowlevel_command_command_input(0x30);
-    if (jisc_ssd_lowlevel_command_serial_data_output() == 0) {
+    jisc_ssd_lowlevel_operation_command_input(0x00);
+    jisc_ssd_lowlevel_operation_address4_input(0x00, 0x00, page & 0xFF, ((page >> 8) & 0xFF));
+    jisc_ssd_lowlevel_operation_command_input(0x30);
+    if (jisc_ssd_lowlevel_operation_serial_data_output() == 0) {
       bad = true;
     }
     if (bad) {
