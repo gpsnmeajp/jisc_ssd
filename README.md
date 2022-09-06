@@ -1,5 +1,5 @@
 # jisc_ssd
-JISC-SSDの動作サンプルというか実装例というかです。
+[JISC-SSD(Jisaku In-Storage Computation SSD学習ボード)](https://crane-elec.co.jp/products/vol-28/)の動作サンプルというか実装例というかデバッグツールというかです。
 
 Arduino IDE + [earlephilhower/arduino-pico](https://github.com/earlephilhower/arduino-pico) を導入した環境で、  
 JISC-SSDに転送すると動作します。
