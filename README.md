@@ -43,6 +43,10 @@ Bad Blockの対応は固定テーブル方式です。
 その上で、下記関数のBad Block置き換えを適切に書き換えてください。  
 int bad_block_replace(int page)
 
+ウェアレベリングなし
+
+Trimなし
+
 ![](check.png)
 
 ![](disc.png)
