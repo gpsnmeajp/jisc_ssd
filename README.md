@@ -6,6 +6,8 @@
 Arduino IDE + [earlephilhower/arduino-pico](https://github.com/earlephilhower/arduino-pico) を導入した環境で、  
 JISC-SSDに転送すると動作します。
 
+Windows 11環境で動作確認。
+
 誤りや、バグが色々とある可能性があります。
 
 # ssd.ino
@@ -14,7 +16,7 @@ JISC-SSDに転送すると動作します。
 SDKをPico SDKに設定してください。
 
 書き込むと、USBからの接続待ちとなり、LEDが高速に点滅します。  
-TeraTermなど端末エミュレータでCOMポートに接続してください。
+TeraTermなど端末エミュレータでCOMポートに接続してください。(改行コードはLFにしてください)
 
 操作内容は画面を参照してください。
 
