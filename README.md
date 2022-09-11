@@ -1,4 +1,5 @@
 # jisc_ssd
+## 概要
 [JISC-SSD(Jisaku In-Storage Computation SSD学習ボード)](https://crane-elec.co.jp/products/vol-28/)の動作サンプルというか実装例というかデバッグツールというかです。
 
 参考: [https://note.com/gpsnmeajp/n/n7a85a5118065](https://note.com/gpsnmeajp/n/n7a85a5118065)
@@ -10,7 +11,10 @@ Windows 11環境で動作確認。
 
 誤りや、バグが色々とある可能性があります。
 
-# ssd.ino
+jisc_ssd_*.ino　が各スケッチに散らばっていますが、それぞれ微妙に異なるためご注意ください。  
+(速度チューニングが入っていたり、誤り訂正処理が入っていたり)
+
+## ssd.ino
 デバッグツールです
 
 SDKをPico SDKに設定してください。
@@ -24,7 +28,7 @@ TeraTermなど端末エミュレータでCOMポートに接続してください
 
 ![](config.png)
 
-# msc_ecc.ino
+## msc_ecc.ino
 USB-SSDとして認識させるサンプルです
 
 下記のmsc.inoに拡張ハミング符号(8,4)を実装して、ビットエラーに対処した代わりに、  
@@ -33,7 +37,7 @@ USB-SSDとして認識させるサンプルです
 実用的ではありません。  
 **決して大切なデータを保存しないで下さい**
 
-# msc.ino
+## msc.ino
 USB-SSDとして認識させるサンプルです
 
 誤り訂正をしていないため、必ずビットエラーが発生します。  
@@ -62,3 +66,14 @@ Trimなし
 ![](check.png)
 
 ![](disc.png)
+
+## msc_ecc_fs.ino
+USB-SSDとして認識させた上で、さらに横からPetit FatFs(ELM-Chan氏ライブラリ)で  
+led.txtを読み込んでLEDに反映させる機能をつけたものです。
+
+**NANDアクセス処理に対して排他処理をしていないため、MSCもFatFsも正常に動作しなくなるときがあります。**
+
+**決して大切なデータを保存しないで下さい**
+
+![](block.png)
+
