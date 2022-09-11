@@ -71,6 +71,11 @@ Trimなし
 USB-SSDとして認識させた上で、さらに横からPetit FatFs(ELM-Chan氏ライブラリ)で  
 led.txtを読み込んでLEDに反映させる機能をつけたものです。
 
+```
+echo 1 > E:\led.txt
+echo 0 > E:\led.txt
+```
+
 **NANDアクセス処理に対して排他処理をしていないため、MSCもFatFsも正常に動作しなくなるときがあります。**
 
 **決して大切なデータを保存しないで下さい**
